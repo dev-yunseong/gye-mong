@@ -110,8 +110,7 @@ namespace GyeMong.GameSystem.Indicator
             if (_shapeMap.TryGetValue(type, out var shape))
             {
                 GameObject indicator = shape.CreateIndicator(attackObject, pos, rot);
-                StartCoroutine(indicator.AddComponent<Indicator>().Flick(duration));
-                yield return new WaitForSeconds(duration);
+                yield return indicator.AddComponent<Indicator>().Flick(duration);
                 action?.Invoke();
             }
             else

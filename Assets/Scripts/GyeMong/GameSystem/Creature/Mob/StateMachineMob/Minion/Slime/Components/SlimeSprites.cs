@@ -8,7 +8,6 @@ namespace GyeMong.GameSystem.Creature.Mob.StateMachineMob.Minion.Slime.Component
         public Sprite[] idleSprites;
         public Sprite[] rangedAttackSprites;
         public Sprite[] meleeAttackSprites;
-        public Sprite[] dashAttackSprites;
         public Sprite[] dieSprites;
     
         public Sprite[] GetSprite(SlimeAnimator.AnimationType type)
@@ -21,8 +20,6 @@ namespace GyeMong.GameSystem.Creature.Mob.StateMachineMob.Minion.Slime.Component
                     return meleeAttackSprites;
                 case SlimeAnimator.AnimationType.RangedAttack:
                     return rangedAttackSprites;
-                case SlimeAnimator.AnimationType.DashAttack:
-                    return dashAttackSprites;
                 case SlimeAnimator.AnimationType.Die:
                     return dieSprites;
             }
