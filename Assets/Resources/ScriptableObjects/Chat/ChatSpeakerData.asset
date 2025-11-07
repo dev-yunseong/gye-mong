@@ -75,10 +75,32 @@ MonoBehaviour:
     speakerName: System
     image: {fileID: 0}
     Faces: []
+  - speakerType: 60
+    speakerName: "\uB098\uAC00 \uC804\uC0AC\uC7A5"
+    image: {fileID: -1798986292, guid: 8587d2ef76d1fbe4b9beecfd2d0875e9, type: 3}
+    Faces: []
+  - speakerType: 61
+    speakerName: "\uB098\uAC00 \uC544\uC774"
+    image: {fileID: 21300000, guid: 4348dcd24f13547ffb732e8e8499e0d1, type: 3}
+    Faces: []
+  - speakerType: 62
+    speakerName: "\uB098\uAC00 \uC8FC\uBBFC"
+    image: {fileID: 21300000, guid: bb78c0ef574094f3ca19972e60ef33c7, type: 3}
+    Faces: []
   - speakerType: 70
     speakerName: "\uBC29\uB791\uC790"
-    image: {fileID: 21300000, guid: 6a8bb3aedf368b8419c359806ddede7d, type: 3}
-    Faces: []
+    image: {fileID: 21300000, guid: 15f95b19aa3974d74a77ed1462b1e60f, type: 3}
+    Faces:
+    - faceType: 1
+      faceImage: {fileID: 21300000, guid: c924b773edf6c43ae89f0942ee249805, type: 3}
+    - faceType: 12
+      faceImage: {fileID: 21300000, guid: d90665f4121cd4a68adf204fbb50fdc4, type: 3}
+    - faceType: 10
+      faceImage: {fileID: 21300000, guid: b540e013fc26e4832a24e02306a9c53a, type: 3}
+    - faceType: 3
+      faceImage: {fileID: 21300000, guid: 87b6cfdb783df429888893e23b735e34, type: 3}
+    - faceType: 14
+      faceImage: {fileID: 21300000, guid: 89a28a09ca00d40b4b8bda17a4cc0e01, type: 3}
   - speakerType: 50
     speakerName: "\uB3C4\uC801\uB2E8 \uC878\uAC1C"
     image: {fileID: 21300000, guid: 44ce1e6d29ac94fe783ad65be04e1c68, type: 3}
@@ -97,10 +119,14 @@ MonoBehaviour:
       faceImage: {fileID: 21300000, guid: b60e1270a0dd148dcadf30d27bbc9800, type: 3}
     - faceType: 10
       faceImage: {fileID: 21300000, guid: bb78c0ef574094f3ca19972e60ef33c7, type: 3}
-  - speakerType: 100
-    speakerName: 
-    image: {fileID: 0}
-    Faces: []
+  - speakerType: 80
+    speakerName: "\uC0CC\uB4DC\uC6DC"
+    image: {fileID: 21300000, guid: 30c532e3ec59a4351b06e76d90ce204a, type: 3}
+    Faces:
+    - faceType: 1
+      faceImage: {fileID: 21300000, guid: 30c532e3ec59a4351b06e76d90ce204a, type: 3}
+    - faceType: 4
+      faceImage: {fileID: 21300000, guid: d05c9ccb9a6b14a878f7e3eb88d322ad, type: 3}
   - speakerType: 200
     speakerName: "Team 6203\uC758 \uD300\uC7A5"
     image: {fileID: 21300000, guid: 7923ba510d7ef4732a7396a57ba8c0f2, type: 3}

@@ -1,21 +1,17 @@
 using System.Collections;
-using System.Collections.Generic;
 using GyeMong.EventSystem.Interface;
 using GyeMong.GameSystem.Creature.Player.Component;
 using GyeMong.GameSystem.Creature.Player.Component.Collider;
 using GyeMong.GameSystem.Creature.Player.Controller;
-using GyeMong.GameSystem.Map.Stage;
 using GyeMong.InputSystem;
 using UnityEngine;
 using DG.Tweening;
-using GyeMong.UISystem.Game.BattleUI;
 
 namespace GyeMong.GameSystem.Creature.Player
 {
     public class PlayerCharacter : MonoBehaviour, IControllable, IEventTriggerable
     {
         public PlayerChangeListenerCaller changeListenerCaller = new PlayerChangeListenerCaller();
-        
         public StatComponent stat;
         [SerializeField] private StatData _statData;
         [SerializeField] private float curHealth;
@@ -27,7 +23,7 @@ namespace GyeMong.GameSystem.Creature.Player
         private Vector2 mousePosition;
         public Vector2 mouseDirection { get; private set; }
         
-        private Rigidbody2D playerRb;
+        public Rigidbody2D playerRb;
         private Animator animator;
         private PlayerSoundController soundController;
         
@@ -46,7 +42,7 @@ namespace GyeMong.GameSystem.Creature.Player
         public bool isAttacking = false;
         private bool isHealing = false;
         private bool canMove = true;
-        private bool isInvincible = false;
+        public bool isInvincible = false;
         private bool canCombo = false;
         private bool comboQueued = false;
         private CircleCollider2D _hitCollider;
@@ -56,6 +52,8 @@ namespace GyeMong.GameSystem.Creature.Player
         private Coroutine healingCoroutine;
 
         public Material[] materials;
+        private Renderer _renderer;
+        private SpriteRenderer _spriteRenderer;
 
         private Coroutine _attackCoroutine;
         private Tween _attackMoveTween;
@@ -71,12 +69,13 @@ namespace GyeMong.GameSystem.Creature.Player
             soundController = GetComponent<PlayerSoundController>();
             _hitCollider = transform.Find("HitCollider").GetComponent<CircleCollider2D>();
             isTutorial = PlayerPrefs.GetInt("TutorialFlag") == 0;
+            _spriteRenderer = GetComponent<SpriteRenderer>();
+            _renderer = gameObject.GetComponent<Renderer>();
+            _renderer.material = materials[0];
         }
 
         private void Start()
         {
-            Renderer renderer = gameObject.GetComponent<Renderer>();
-            renderer.material = materials[0];
             changeListenerCaller.CallShieldChangeListeners(curShield);
             changeListenerCaller.CallHpChangeListeners(curHealth);
         }
@@ -267,10 +266,9 @@ namespace GyeMong.GameSystem.Creature.Player
         
         private IEnumerator TriggerInvincibility()
         {
-            Material material = gameObject.GetComponent<Renderer>().material;
-            material.SetFloat("_BlinkTrigger", 1f);
+            _renderer.material.SetFloat("_BlinkTrigger", 1f);
             yield return new WaitForSeconds(blinkDelay);
-            material.SetFloat("_BlinkTrigger", 0f);
+            _renderer.material.SetFloat("_BlinkTrigger", 0f);
             yield return new WaitForSeconds(stat.InvincibilityDuration - blinkDelay);
         }
 
@@ -302,13 +300,26 @@ namespace GyeMong.GameSystem.Creature.Player
             Vector2 targetPosition = hit.collider == null
                 ? startPosition + dashDirection * stat.DashDistance
                 : hit.point + hit.normal * 0.1f;
-            
+
             SceneContext.Character.changeListenerCaller.CallDashUsed(stat.DashCooldown);
 
-            // StartCoroutine(SetInvincibility(stat.DashDuration / 5, stat.DashDuration * 3 / 5));
-            
+            StartCoroutine(SetInvincibility(stat.DashDuration / 5, stat.DashDuration * 3 / 5));
+
+            int afterImageCount = 0;
+            int afterImageCountMax = 7;
             yield return (_dashTween = playerRb.DOMove(targetPosition, stat.DashDuration)
                 .SetEase(Ease.OutCubic))
+                .OnUpdate(() =>
+                {
+                    float progress = _dashTween.ElapsedPercentage(); // 0 ~ 70%
+                    float targetThreshold = (afterImageCount + 1) / (float)afterImageCountMax * 0.7f;
+
+                    if (progress >= targetThreshold && afterImageCount < afterImageCountMax)
+                    {
+                        SpawnAfterImage();
+                        afterImageCount++;
+                    }
+                })
                 .WaitForCompletion();
 
             StopPlayer();
@@ -319,6 +330,44 @@ namespace GyeMong.GameSystem.Creature.Player
 
             yield return new WaitForSeconds(stat.DashCooldown);
             canDash = true;
+        }
+        
+        private void SpawnAfterImage()
+        {
+            GameObject clone = new GameObject("AfterImage")
+            {
+                transform =
+                {
+                    position = transform.position,
+                    rotation = transform.rotation
+                }
+            };
+
+            SpriteRenderer sr = clone.AddComponent<SpriteRenderer>();
+            if (isInvincible)
+            {
+                sr.material = materials[2];
+                sr.material.SetFloat("_isUsable", 1f);
+            }
+            sr.sprite = _spriteRenderer.sprite;
+            sr.flipX = _spriteRenderer.flipX;
+            sr.sortingLayerID = _spriteRenderer.sortingLayerID;
+            sr.sortingOrder = _spriteRenderer.sortingOrder - 1;
+            sr.color = new Color(1f, 1f, 1f, 0.45f);
+            
+            Destroy(clone, stat.DashDuration * 0.3f);
+        }
+
+        private IEnumerator SetInvincibility(float delay, float duration)
+        {
+            yield return new WaitForSeconds(delay);
+            isInvincible = true;
+            _renderer.material = materials[2];
+            _renderer.material.SetFloat("_isUsable", 1f);
+            yield return new WaitForSeconds(duration);
+            _renderer.material.SetFloat("_isUsable", 0f);
+            _renderer.material = materials[0];
+            isInvincible = false;
         }
 
         private Vector2 GetCurrentInputDirection(Vector2 direction)
